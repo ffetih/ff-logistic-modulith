@@ -1,0 +1,10 @@
+= Modulith
+:description: FF Logistic as one Spring Modulith application.
+
+One process, `logistics-app`, runs every business area. The areas are the domain cores from ff-logistic-shared; this application wires them together in-process:
+
+* a question to another area is a method call through its port,
+* an event is a Spring Modulith event, recorded in the same transaction and delivered to listeners in the same JVM,
+* Spring Modulith verifies that no area reaches into another except through its ports.
+
+The application starts in S1 (xref:ff-logistic::plan.adoc[plan]). The services side does the same work over the network: xref:services::index.adoc[Services].

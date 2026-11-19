@@ -1,0 +1,7 @@
+# The modulith's part of the documentation site (ff-logistic-docs assembles it).
+name: modulith
+title: Modulith
+version: ~
+start_page: index.adoc
+nav:
+  - modules/ROOT/nav.adoc
