@@ -7,4 +7,19 @@ One process, `logistics-app`, runs every business area. The areas are the domain
 * an event is a Spring Modulith event, recorded in the same transaction and delivered to listeners in the same JVM,
 * Spring Modulith verifies that no area reaches into another except through its ports.
 
-The application starts in S1 (xref:ff-logistic::plan.adoc[plan]). The services side does the same work over the network: xref:services::index.adoc[Services].
+[cols="1,3",options="header"]
+|===
+| Path | What
+
+| `logistics-app` | The application: every domain core, the chassis (ff-base-app), one `ModularityTest`
+| `deploy/apps/logistics-app` | Its values for the runtime's chart; the switch deploys it when `active: modulith`
+|===
+
+[source,bash]
+----
+./build.sh                                              # after base and shared are installed
+docker build -t ghcr.io/ffetih/ff-logistic-modulith/logistics-app:local logistics-app
+k3d image import ghcr.io/ffetih/ff-logistic-modulith/logistics-app:local -c ff-logistic
+----
+
+From the IDE, against the cluster's PostgreSQL and identity service: run `LogisticsApplication` with the `local` profile to call it without a token (`X-Tenant-Id` header). The services side does the same work over the network: xref:services::index.adoc[Services].

@@ -1,0 +1,10 @@
+# Runs from the IDE without signing in: X-Tenant-Id (and optionally X-User-Name, X-User-Roles)
+# stands in for a token. Never in a container: the chart does not set this profile.
+#
+#   curl -H 'X-Tenant-Id: ff-eu-freight' localhost:8081/api/v1/me
+ff:
+  security:
+    header-fallback:
+      enabled: true
+      default-roles:
+        - REPORT_VIEWER

@@ -1,0 +1,45 @@
+# The modulith on the local k3d cluster. Read after values.yaml, so it wins.
+#
+# Not a NodePort of its own: clients reach it through the edge (port 8081, runtime's
+# deploy/platform/edge), which selects the pods labelled ff-logistic/edge. On this side every pod
+# of the application carries it; on the services side only the gateway's pods do.
+podLabels:
+  ff-logistic/edge: "true"
+
+# The areas' migrations run in the PreSync Job (MigrationArea, one history table per area); the
+# pods only use the schema. ff_logistics is the server's own database, so nothing creates it.
+migration:
+  enabled: true
+
+# After a sync: the application's own Service answers, rejects a call without a token, and
+# knows the caller with one.
+smokeTest:
+  enabled: true
+  token:
+    url: http://identity:8085/sessions
+    secret: smoke-test-user
+  checks:
+    - {path: /actuator/health/readiness, status: 200, contains: '"status":"UP"'}
+    - {path: /api/v1/me, status: 401}
+    - {path: /api/v1/me, status: 200, token: true, contains: '"tenantId":"ff-eu-freight"'}
+
+# Every variable in one list: Helm replaces lists, it does not merge them.
+env:
+  - name: LOGISTICS_DB_URL
+    value: jdbc:postgresql://postgres:5432/ff_logistics
+  - name: LOGISTICS_DB_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres-credentials
+        key: username
+  - name: LOGISTICS_DB_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres-credentials
+        key: password
+  - name: IDENTITY_JWKS_URI
+    value: http://identity:8085/jwks
+  - name: IDENTITY_TOKEN_ISSUER
+    value: http://localhost:8180/realms/ff-logistics
+  - name: FF_RELEASE_HEALTHY
+    value: "true"

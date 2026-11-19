@@ -1,0 +1,9 @@
+# The modulith, every environment. Overrides the chart's defaults
+# (ff-logistic-runtime: deploy/charts/ff-service/values.yaml).
+image:
+  repository: ghcr.io/ffetih/ff-logistic-modulith/logistics-app
+
+containerPort: 8081
+
+service:
+  port: 8081
