@@ -1,6 +1,5 @@
-# The tag of the image imported into the k3d cluster with
-#   docker build -t ghcr.io/ffetih/ff-logistic-modulith/logistics-app:local logistics-app
-#   k3d image import ghcr.io/ffetih/ff-logistic-modulith/logistics-app:local -c ff-logistic
-# CI does not publish this image yet (S2), so nothing rewrites this file.
+# Written by CI on every push to main that changes this image: the tag it published
+# (ff-logistic-runtime/.github/workflows/java-publish.yml). For an image built and
+# loaded with k3d image import instead, set the tag to "local" here by hand.
 image:
-  tag: local
+  tag: 94337a46439ed7205bf525031ee212167b12bb6f
