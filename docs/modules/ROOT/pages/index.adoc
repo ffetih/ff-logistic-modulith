@@ -11,9 +11,14 @@ One process, `logistics-app`, runs every business area. The areas are the domain
 |===
 | Path | What
 
-| `logistics-app` | The application: every domain core, the chassis (ff-base-app), one `ModularityTest`
+| `logistics-app` | The application: every domain core, the chassis (ff-base-app), the `flows` module that wires the areas together, one `ModularityTest`
 | `deploy/apps/logistics-app` | Its values for the runtime's chart; the switch deploys it when `active: modulith`
 |===
+
+[[flows]]
+== The flows, in-process
+
+The `flows` module exists only here: it connects one area's API to another's, which no core may do itself (decision 2). Flow 2 (S4): `DeliveriesToWarehouses` hears transportation's `ShipmentDelivered` after the commit, on a thread of its own, and calls warehousing's `InboundArrivals.open`. The event publication registry stores the event with the delivery, in this process's outbox (schema `modulith`, ff-base-events), and delivers it again if the listener fails. `ModularityTest` checks that `flows` uses both areas through their APIs only.
 
 [source,bash]
 ----

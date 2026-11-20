@@ -27,12 +27,20 @@ class LogisticsApplicationTest {
 
     @Test
     void migratesEachAreaWithItsOwnHistory() {
-        Map<String, Integer> expected = Map.of("warehousing", 3, "transportation", 1, "routing", 1);
+        Map<String, Integer> expected = Map.of("warehousing", 4, "transportation", 2, "routing", 1);
         expected.forEach((area, latest) -> {
             Integer version = jdbc.queryForObject("select max(\"version\") from \"" + area + "_flyway_history\""
                     + " where \"type\" = 'SQL'", Integer.class);
             assertThat(version).as(area).isEqualTo(latest);
         });
+    }
+
+    @Test
+    void keepsItsOutboxInASchemaOfItsOwn() {
+        Integer version = jdbc.queryForObject("select max(\"version\") from modulith.\"outbox_flyway_history\""
+                + " where \"type\" = 'SQL'", Integer.class);
+        assertThat(version).isEqualTo(1);
+        assertThat(jdbc.queryForObject("select count(*) from modulith.event_publication", Integer.class)).isNotNull();
     }
 
     @Test
