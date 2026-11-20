@@ -28,3 +28,7 @@ ff:
     header-fallback:
       # Local development only, switched on by the "local" profile (application-local.yml).
       enabled: false
+  # This process's outbox (ff-base-events, decision 12): the event publication registry in the
+  # schema "modulith", migrated with the areas. The events between areas stay in this JVM.
+  events:
+    schema: modulith

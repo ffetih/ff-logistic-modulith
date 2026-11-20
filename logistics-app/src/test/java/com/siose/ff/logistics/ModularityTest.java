@@ -7,8 +7,9 @@ import org.springframework.modulith.core.ApplicationModule;
 import org.springframework.modulith.core.ApplicationModules;
 
 /**
- * The business areas, from shared's jars, as Spring Modulith modules: none reaches into another's
- * internals, none uses an area it does not declare, and none forms a cycle (decision 2).
+ * The business areas, from shared's jars, as Spring Modulith modules, and the modulith's own
+ * {@code flows}, which wires them together: none reaches into another's internals, none uses an
+ * area it does not declare, and none forms a cycle (decision 2).
  */
 class ModularityTest {
 
@@ -17,7 +18,7 @@ class ModularityTest {
     @Test
     void theAreasAreTheModules() {
         assertThat(modules.stream().map(ApplicationModule::getIdentifier).map(Object::toString))
-                .containsExactlyInAnyOrder("standards", "warehousing", "transportation", "routing");
+                .containsExactlyInAnyOrder("standards", "warehousing", "transportation", "routing", "flows");
     }
 
     @Test
