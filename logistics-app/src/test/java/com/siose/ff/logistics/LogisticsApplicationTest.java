@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,11 +27,12 @@ class LogisticsApplicationTest {
 
     @Test
     void migratesEachAreaWithItsOwnHistory() {
-        for (String area : new String[] {"warehousing", "transportation", "routing"}) {
+        Map<String, Integer> expected = Map.of("warehousing", 3, "transportation", 1, "routing", 1);
+        expected.forEach((area, latest) -> {
             Integer version = jdbc.queryForObject("select max(\"version\") from \"" + area + "_flyway_history\""
                     + " where \"type\" = 'SQL'", Integer.class);
-            assertThat(version).as(area).isEqualTo(1);
-        }
+            assertThat(version).as(area).isEqualTo(latest);
+        });
     }
 
     @Test
