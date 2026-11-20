@@ -6,6 +6,26 @@
 podLabels:
   ff-logistic/edge: "true"
 
+# Canary with analysis. Four pods so the weights are whole pods: 25 % is one canary pod. The
+# edge selects pods by label, so it sends the canary its share by pod count too.
+replicaCount: 4
+
+rollout:
+  enabled: true
+  strategy: canary
+  canary:
+    analysis:
+      enabled: true
+    steps:
+      - setWeight: 25
+      # Three reads of /actuator/health/release on the canary pod, 10 s apart: all UP, or abort
+      - analysis:
+          templates:
+            - templateName: logistics-app-release
+      - setWeight: 50
+      - pause: {duration: 30s}
+      - setWeight: 100
+
 # The areas' migrations run in the PreSync Job (MigrationArea, one history table per area); the
 # pods only use the schema. ff_logistics is the server's own database, so nothing creates it.
 migration:
