@@ -5,7 +5,7 @@
  *
  * <p>Spring Modulith checks that it uses the areas through their APIs only.
  */
-@ApplicationModule(displayName = "Flows", allowedDependencies = {"transportation", "warehousing"})
+@ApplicationModule(displayName = "Flows", allowedDependencies = {"transportation", "warehousing", "routing"})
 package com.siose.ff.logistics.flows;
 
 import org.springframework.modulith.ApplicationModule;
