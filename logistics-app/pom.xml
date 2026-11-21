@@ -109,6 +109,19 @@
             <groupId>com.siose.ff</groupId>
             <artifactId>ff-base-events</artifactId>
         </dependency>
+        <!--
+            The events marked @Externalized also go to Kafka, from this process's outbox (S6): the
+            same topics and the same JSON as the services, so a reader cannot tell which side sent
+            them. Between the areas, the events still stay in this JVM.
+        -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -133,6 +146,19 @@
         <dependency>
             <groupId>org.springframework.modulith</groupId>
             <artifactId>spring-modulith-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- A Kafka broker inside the test JVM: what leaves this process is read back for real -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- The event contracts (ff-contracts): what this process sends is checked against them -->
+        <dependency>
+            <groupId>com.siose.ff</groupId>
+            <artifactId>ff-contracts</artifactId>
+            <version>${ff-domain.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

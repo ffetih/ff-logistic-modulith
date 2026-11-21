@@ -22,6 +22,28 @@ spring:
           jwk-set-uri: ${IDENTITY_JWKS_URI:http://localhost:8085/jwks}
           issuer-uri: ${IDENTITY_TOKEN_ISSUER:http://localhost:8180/realms/ff-logistics}
           audiences: ff-logistics-api
+  # Kafka (S6): where the events marked @Externalized go, as from the services: ShipmentDelivered,
+  # ShipmentProgressed, RouteStopCompleted. In the cluster the chart sets KAFKA_BOOTSTRAP_SERVERS
+  # (kafka:9092); from the IDE, the cluster's broker on localhost:9094.
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9094}
+    admin:
+      # The topics are created at the start. Without a broker the start is held 5 s, not 40 s: the
+      # application starts anyway, and the outbox sends its events once the broker is back.
+      operation-timeout: 5s
+      close-timeout: 2s
+    producer:
+      # Wait for every in-sync replica: an acknowledged event survives a broker that fails.
+      acks: all
+      properties:
+        # Give up a send after 10 s without a broker instead of 60 s. The event stays open in
+        # modulith.event_publication, and the outbox sends it again.
+        max.block.ms: 10000
+  modulith:
+    events:
+      externalization:
+        # The same switch as the services'. Off, the events stay in this JVM, as before S6.
+        enabled: ${EVENTS_EXTERNALIZATION_ENABLED:true}
 
 ff:
   # Documents (ff-base-storage, S05-05): the e-CMR and the proof of delivery, written once, through
@@ -43,7 +65,8 @@ ff:
       # Local development only, switched on by the "local" profile (application-local.yml).
       enabled: false
   # This process's outbox (ff-base-events, decision 12): the event publication registry in the
-  # schema "modulith", migrated with the areas. The events between areas stay in this JVM.
+  # schema "modulith", migrated with the areas. The events between areas stay in this JVM; those
+  # marked @Externalized also go to Kafka, from the same outbox (spring.kafka above).
   events:
     schema: modulith
   # The routing area's planner. Road distances come from the straight-line estimate (haversine x

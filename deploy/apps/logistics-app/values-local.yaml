@@ -61,6 +61,9 @@ env:
     value: http://identity:8085/jwks
   - name: IDENTITY_TOKEN_ISSUER
     value: http://localhost:8180/realms/ff-logistics
+  # S6: the events marked @Externalized go to the cluster's broker, as from the services.
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    value: kafka:9092
   - name: FF_RELEASE_HEALTHY
     value: "true"
   - name: STORAGE_PROVIDER

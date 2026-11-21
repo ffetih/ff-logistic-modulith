@@ -19,6 +19,8 @@ The same three flows as the services side, inside one JVM:
 | A delivery opens an arrival at the warehouse | A Spring Modulith event, recorded with the delivery in the outbox (schema `modulith`), delivered after the commit |
 | A completed route stop delivers its shipment | The same, from routing to transportation, and on into the warehouse |
 
+Since S6, the events marked `@Externalized` also leave the JVM: `ShipmentDelivered`, `ShipmentProgressed` and `RouteStopCompleted` go from the same outbox to the same Kafka topics as the services', with the same JSON and the same keys. A test reads each one back from a broker in the test JVM and checks it against its contract in shared (`ff-contracts`), the check the services run too. So a reader outside, such as the analytics loader, cannot tell which side sent a message.
+
 Spring Modulith's `ModularityTest` checks that no area reaches into another except through its API.
 
 ## Build
