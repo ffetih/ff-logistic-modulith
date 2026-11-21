@@ -27,7 +27,7 @@ class LogisticsApplicationTest {
 
     @Test
     void migratesEachAreaWithItsOwnHistory() {
-        Map<String, Integer> expected = Map.of("warehousing", 4, "transportation", 3, "routing", 3);
+        Map<String, Integer> expected = Map.of("warehousing", 4, "transportation", 4, "routing", 4);
         expected.forEach((area, latest) -> {
             Integer version = jdbc.queryForObject("select max(\"version\") from \"" + area + "_flyway_history\""
                     + " where \"type\" = 'SQL'", Integer.class);
