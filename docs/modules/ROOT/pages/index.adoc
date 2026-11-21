@@ -20,6 +20,11 @@ One process, `logistics-app`, runs every business area. The areas are the domain
 
 The `flows` module exists only here: it connects one area's API to another's, which no core may do itself (decision 2). Flow 2 (S4): `DeliveriesToWarehouses` hears transportation's `ShipmentDelivered` after the commit, on a thread of its own, and calls warehousing's `InboundArrivals.open`. The event publication registry stores the event with the delivery, in this process's outbox (schema `modulith`, ff-base-events), and delivers it again if the listener fails. `ModularityTest` checks that `flows` uses both areas through their APIs only.
 
+Flows 1 and 3 (S5), between routing and transportation:
+
+* *Flow 1, a question*: `RoadDistancesForTransportation` fills transportation's port `DistanceLookup` with routing's `RoadDistances`. A method call, so routing cannot be "down" while transportation runs (xref:ff-logistic::architecture.adoc#flow-1[on each side]).
+* *Flow 3, an event*: `StopsToShipments` hears routing's `RouteStopCompleted` after the commit, on a thread of its own, and calls transportation's `ShipmentDeliveries.deliver`. The delivery's own `ShipmentDelivered` then runs flow 2: one completed stop, three areas (xref:ff-logistic::architecture.adoc#flow-3[on each side]).
+
 [source,bash]
 ----
 ./build.sh                                              # after base and shared are installed
