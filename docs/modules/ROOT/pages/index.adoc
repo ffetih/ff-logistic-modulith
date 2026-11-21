@@ -20,6 +20,8 @@ One process, `logistics-app`, runs every business area. The areas are the domain
 
 The `flows` module exists only here: it connects one area's API to another's, which no core may do itself (decision 2). Flow 2 (S4): `DeliveriesToWarehouses` hears transportation's `ShipmentDelivered` after the commit, on a thread of its own, and calls warehousing's `InboundArrivals.open`. The event publication registry stores the event with the delivery, in this process's outbox (schema `modulith`, ff-base-events), and delivers it again if the listener fails. `ModularityTest` checks that `flows` uses both areas through their APIs only.
 
+Events out (S6): the events marked `@Externalized` also go to Kafka, from the same outbox, to the same topics as the services' (`EventTopics` creates them), keyed the same way. `EventsToKafkaTest` reads each of the three back from a broker in the test JVM and checks it against its contract in shared's `ff-contracts`, the check the services' tests run too (xref:ff-logistic::architecture.adoc#events-out[events out]).
+
 Flows 1 and 3 (S5), between routing and transportation:
 
 * *Flow 1, a question*: `RoadDistancesForTransportation` fills transportation's port `DistanceLookup` with routing's `RoadDistances`. A method call, so routing cannot be "down" while transportation runs (xref:ff-logistic::architecture.adoc#flow-1[on each side]).
